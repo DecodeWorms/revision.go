@@ -8,15 +8,40 @@ import (
 	"revision.go/types"
 )
 
+// I advise renaming this to something like "StudentService"
 type Students struct {
 	d *Conn
 }
 
+//  Above comment should force this to renamed to "NewStudentService"
 func NewStudents(c *Conn) Students {
 	return Students{
 		d: c,
 	}
 }
+
+// 1- The receiver,namely "Students" should become "StudentService"
+
+// 2- This "s.d.Client" is not readable in the sense that someone reding your code needs to 
+// frequently scroll up to your "Students" to fugire our what "s.d" refers to. A good naming is something like: "s.conn."
+
+// 3- If you have to change your tab;e's name, you would have to search and make the change in every query. 
+// You should define a constant variable for table.
+
+// 4- PANICing inside a method/function that is called by other services is a terbile idea. Don't do that! Retrun the error and let the caller handle it.
+
+// 5- Consider renaming "types" folder to "models".
+
+// 6- The function "SaveData" purpose does not make sense to me. Does it validate the input (that is what it seems to be doing) or it saves data?
+
+// 7- Handle input validation at the Handler later (always keep the Service/Store layer as clean and lean as possible).
+
+// 8- The methos "Update" and a few other ones seem to be returning raw SQL. This is wrong; please return a struct!
+
+// Purposes of "GetSlice" and "CheckForTwoStrings" are unclear to me.
+
+// This "CheckNameLength" and "CheckDatatype" will never return error should the check fail. Why? because, you are not retuning defining and retuning error the right way.
+
 
 func (s Students) Create(u types.User) (sql.Result, error) {
 	var res *types.User
@@ -27,7 +52,7 @@ func (s Students) Create(u types.User) (sql.Result, error) {
 
 	row, err = s.d.Client.Exec("INSERT INTO users VALUES($1,$2,$3)", res.Id, res.Name, res.Gender)
 	if err != nil {
-		panic(err)
+		panic(err) // terrible idea
 		//return nil, err
 	}
 
@@ -127,8 +152,8 @@ func CheckDatatype(n string) (string, error) {
 		return n, nil
 	}
 	return "", err
-
 }
+
 
 func SaveData(u types.User) (*types.User, error) {
 	var res types.User
