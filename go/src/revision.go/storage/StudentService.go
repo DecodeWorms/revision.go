@@ -2,7 +2,6 @@ package storage
 
 import (
 	"database/sql"
-	"fmt"
 
 	"revision.go/models"
 )
@@ -53,7 +52,7 @@ func (s StudentServices) GetUsers() ([]models.User, error) {
 	var rows *sql.Rows
 	rows, err = s.con.Client.Query("SELECT id,name,gender FROM users")
 	if err != nil {
-		return nil, fmt.Errorf("query error :%v", err)
+		return nil, err
 	}
 
 	for rows.Next() {
