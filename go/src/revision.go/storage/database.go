@@ -33,3 +33,7 @@ func NewConn(c config.Config, db *sql.DB) *Conn {
 		Client: db,
 	}
 }
+
+func Comm() {
+
+}

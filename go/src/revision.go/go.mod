@@ -3,6 +3,7 @@ module revision.go
 go 1.16
 
 require (
+	github.com/DecodeWorms/revision.go v0.0.0-20220225121814-36c4109c6df7 // indirect
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/joho/godotenv v1.4.0

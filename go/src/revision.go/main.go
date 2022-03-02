@@ -14,7 +14,7 @@ import (
 )
 
 var c *storage.Conn
-var s storage.Students
+var s storage.StudentServices
 
 func init() {
 	_ = godotenv.Load()
@@ -34,7 +34,7 @@ func init() {
 	s = storage.NewStudents(c)
 }
 func main() {
-	std := handleers.NewStudentsHandlers(s)
+	std := handleers.NewStudentServiceHandlers(s)
 	router := mux.NewRouter()
 	router.HandleFunc("/s/cr", std.Create).Methods(http.MethodPost)
 	router.HandleFunc("/s/us/{name}", std.GetUser).Methods(http.MethodGet)
@@ -43,6 +43,6 @@ func main() {
 	router.HandleFunc("/s/del/{name}", std.Delete).Methods(http.MethodDelete)
 	//router.HandleFunc("/st/aut", std.AutoCreate).Methods(http.MethodPost)
 
-	log.Fatal(http.ListenAndServe(":8004", router))
+	log.Fatal(http.ListenAndServe(":8008", router))
 
 }
