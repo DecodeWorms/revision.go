@@ -43,7 +43,7 @@ func TestGetUsersResults(t *testing.T) {
 	}
 
 	var us []models.User
-	us, err = ValidateUsersResults(users)
+	us, err = ValidateGetUsers(users)
 	require.NoError(t, err)
 	require.NotEmpty(t, us)
 }

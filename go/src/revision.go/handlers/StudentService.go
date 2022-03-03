@@ -77,9 +77,9 @@ func (s StudentsHandlers) GetUsers(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	var users []models.User
-	users, err = s.srv.GetUsers()
+	users, _ = s.srv.GetUsers()
 
-	_, err = ValidateUsersResults(users)
+	_, err = ValidateGetUsers(users)
 
 	if err != nil {
 		log.Fatal(err)
@@ -128,7 +128,7 @@ func (s StudentsHandlers) Delete(w http.ResponseWriter, r *http.Request) {
 
 	err = s.srv.Delete(name)
 	if err != nil {
-		json.NewEncoder(w).Encode(fmt.Errorf("Err res : %v", err))
+		json.NewEncoder(w).Encode(fmt.Errorf("err res : %v", err))
 	}
 	json.NewEncoder(w).Encode(success)
 
@@ -147,7 +147,7 @@ func ValidateData(u models.User) (*models.User, error) {
 
 	}
 
-	return nil, fmt.Errorf("One or all the field(is) is empty")
+	return nil, fmt.Errorf("one or all the field(is) is empty")
 
 }
 
@@ -160,7 +160,7 @@ func ValidateParameter(n string) (string, error) {
 
 }
 
-func ValidateUsersResults(u []models.User) ([]models.User, error) {
+func ValidateGetUsers(u []models.User) ([]models.User, error) {
 
 	for i, _ := range u {
 		if u[i].Id != 0 && u[i].Name != "" && u[i].Gender != "" {
@@ -168,6 +168,6 @@ func ValidateUsersResults(u []models.User) ([]models.User, error) {
 		}
 	}
 
-	return nil, fmt.Errorf("One or all of the results are empty")
+	return nil, fmt.Errorf("one or all of the results are empty")
 
 }
