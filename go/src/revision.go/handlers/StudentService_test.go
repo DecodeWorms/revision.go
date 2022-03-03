@@ -1,49 +1,120 @@
 package handleers
 
 import (
-	"encoding/json"
-	"log"
+	"fmt"
 	"testing"
 
-	"github.com/stretchr/testify/require"
 	"revision.go/models"
 )
 
+//These are an example of table driven test on struct and string
+
 func TestValidateData(t *testing.T) {
-	var err error
-	users := `{"id":1,"name": "Bola","gender":"female"}`
 
-	var use models.User
-	_ = json.Unmarshal([]byte(users), &use)
+	type errorTestCase struct {
+		input models.User
+	}
 
-	var res *models.User
-	res, err = ValidateData(use)
+	c := []errorTestCase{{
+		input: models.User{
+			Id:     1,
+			Name:   "funke",
+			Gender: "male",
+		},
+	}, {
+		input: models.User{
+			Id:     2,
+			Name:   "yinka",
+			Gender: "female",
+		},
+	}, {
+		input: models.User{
+			Id:     33,
+			Name:   "fatai",
+			Gender: "",
+		},
+	}}
 
-	require.NoError(t, err)
-	require.NotEmpty(t, res)
+	for _, scenario := range c {
+
+		err := ValidateData(scenario.input)
+		if err != nil {
+			t.Error(err)
+
+		}
+
+	}
 
 }
 
 func TestValidateParameter(t *testing.T) {
-	var err error
-	var n string
-	n = "name"
-	n, err = ValidateParameter(n)
-	require.NoError(t, err)
-	require.NotEmpty(t, n)
+	type name struct {
+		n string
+	}
+
+	type errorTestCase struct {
+		input name
+	}
+
+	c := []errorTestCase{{
+		input: name{
+			n: "name",
+		},
+	}, {
+		input: name{
+			n: "",
+		},
+	}, {
+		input: name{
+			n: "joe",
+		},
+	}}
+
+	for _, scenario := range c {
+
+		err := ValidateParameter(scenario.input.n)
+		if err != nil {
+			t.Error(err)
+		}
+	}
 
 }
 
-func TestGetUsersResults(t *testing.T) {
-	var err error
-	v := `[{"id":1,"name":"kunle","gender":"female"},{"id":2,"name":"folake","gender":"female"}]`
-	var users []models.User
-	if err = json.Unmarshal([]byte(v), &users); err != nil {
-		log.Fatal(err)
-	}
+//A unit test on a func
+func TestHello(t *testing.T) {
 
-	var us []models.User
-	us, err = ValidateGetUsers(users)
-	require.NoError(t, err)
-	require.NotEmpty(t, us)
+	got := Hello("Bola")
+	expected := "Bola"
+	if expected == got {
+		fmt.Println("They are equal")
+		return
+	}
+	t.Errorf("got %s expected %s", got, expected)
+
+}
+
+func TestCalc(t *testing.T) {
+	got := Calc(5)
+	expected := 2
+
+	if got != expected {
+		t.Errorf("expected %d got %d", expected, got)
+	}
+}
+
+func TestFruitsPrice(t *testing.T) {
+	fruits := [4]int{100, 300, 50, 1000}
+
+	got := FruitsPrice(fruits)
+	expFruits := 1450
+
+	fmt.Println(got, expFruits)
+
+	t.Run("Result of the fruit test", func(t *testing.T) {
+		if got != expFruits {
+			t.Errorf("expected %v got %v", expFruits, got)
+		}
+
+	})
+
 }

@@ -6,8 +6,6 @@ import (
 	"revision.go/models"
 )
 
-const tableName = "users"
-
 type StudentServices struct {
 	con *Conn
 }
@@ -31,14 +29,11 @@ func (s StudentServices) Create(u models.User) error {
 }
 
 func (s StudentServices) GetUser(n string) (*models.User, error) {
-	var name string
-	var err error
 
-	var res *sql.Row
-	res = s.con.Client.QueryRow("SELECT id,name,gender FROM users WHERE name = $1", name)
+	res := s.con.Client.QueryRow("SELECT id,name,gender FROM users WHERE name = $1", n)
 	var us models.User
 
-	if err = res.Scan(&us.Id, &us.Name, &us.Gender); err != nil {
+	if err := res.Scan(&us.Id, &us.Name, &us.Gender); err != nil {
 		return nil, err
 	}
 	return &us, nil
@@ -66,9 +61,9 @@ func (s StudentServices) GetUsers() ([]models.User, error) {
 	return user, nil
 }
 
-func (s StudentServices) Update(old, new string) error {
+func (s StudentServices) Update(new, old string) error {
 	var err error
-	_, err = s.con.Client.Exec("UPDATE users SET name = $1 WHERE name = $2", old, new)
+	_, err = s.con.Client.Exec("UPDATE users SET name = $1 WHERE name = $2", new, old)
 	if err != nil {
 		return err
 	}

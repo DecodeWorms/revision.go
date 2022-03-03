@@ -2,6 +2,7 @@ package handleers
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
@@ -34,7 +35,7 @@ func (s StudentsHandlers) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	_, err = ValidateData(user)
+	err = ValidateData(user)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -51,13 +52,13 @@ func (s StudentsHandlers) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s StudentsHandlers) GetUser(w http.ResponseWriter, r *http.Request) {
-	var err error
+	util.SetHeader(w)
 	var user *models.User
-
+	var err error
 	params := mux.Vars(r)
 	name := params["name"]
 
-	_, err = ValidateParameter(name)
+	err = ValidateParameter(name)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -77,13 +78,9 @@ func (s StudentsHandlers) GetUsers(w http.ResponseWriter, r *http.Request) {
 	var err error
 
 	var users []models.User
-	users, _ = s.srv.GetUsers()
-
-	_, err = ValidateGetUsers(users)
-
+	users, err = s.srv.GetUsers()
 	if err != nil {
 		log.Fatal(err)
-		return
 	}
 
 	json.NewEncoder(w).Encode(success)
@@ -91,12 +88,13 @@ func (s StudentsHandlers) GetUsers(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s StudentsHandlers) Update(w http.ResponseWriter, r *http.Request) {
+	util.SetHeader(w)
 	var user models.User
 	var err error
 	params := mux.Vars(r)
 	name := params["name"]
 
-	_, err = ValidateParameter(name)
+	err = ValidateParameter(name)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -106,7 +104,8 @@ func (s StudentsHandlers) Update(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode("Unable to Unmarshal JSON")
 		return
 	}
-	err = s.srv.Update(name, user.Name)
+
+	err = s.srv.Update(user.Name, name)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -116,11 +115,12 @@ func (s StudentsHandlers) Update(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s StudentsHandlers) Delete(w http.ResponseWriter, r *http.Request) {
+	util.SetHeader(w)
 	var err error
 	params := mux.Vars(r)
 	name := params["name"]
 
-	_, err = ValidateParameter(name)
+	err = ValidateParameter(name)
 	if err != nil {
 		log.Fatal(err)
 		return
@@ -128,46 +128,55 @@ func (s StudentsHandlers) Delete(w http.ResponseWriter, r *http.Request) {
 
 	err = s.srv.Delete(name)
 	if err != nil {
-		json.NewEncoder(w).Encode(fmt.Errorf("err res : %v", err))
+		log.Fatal(err)
+		fmt.Print(err)
+		return
 	}
 	json.NewEncoder(w).Encode(success)
 
 }
 
-func ValidateData(u models.User) (*models.User, error) {
-	var res models.User
+// Helper functions are below
 
-	if u.Id != 0 && u.Name != "" && u.Gender != "" {
-		res = models.User{
-			Id:     u.Id,
-			Name:   u.Name,
-			Gender: u.Gender,
-		}
-		return &res, nil
+func ValidateData(u models.User) error {
 
+	if u.Id == 0 {
+		return errors.New("an empty id passed")
+	}
+	if u.Name == "" {
+		return errors.New("an empty name passed")
 	}
 
-	return nil, fmt.Errorf("one or all the field(is) is empty")
+	if u.Gender == "" {
+		return errors.New("an empty gender passed")
+	}
+	return nil
 
 }
 
-func ValidateParameter(n string) (string, error) {
+func ValidateParameter(n string) error {
 
-	if n != "" {
-		return n, nil
+	if n == "" {
+		return errors.New("an empty paramter passed")
 	}
-	return "", fmt.Errorf("paramter is empty")
+	return nil
 
 }
 
-func ValidateGetUsers(u []models.User) ([]models.User, error) {
+func Hello(n string) string {
+	return n
+}
 
-	for i, _ := range u {
-		if u[i].Id != 0 && u[i].Name != "" && u[i].Gender != "" {
-			return u, nil
-		}
+func Calc(n int) (result int) {
+	result = n * 2 / n
+	return result
+
+}
+
+func FruitsPrice(f [4]int) (result int) {
+	for i := 0; i < 4; i++ {
+		result += f[i]
+
 	}
-
-	return nil, fmt.Errorf("one or all of the results are empty")
-
+	return result
 }
