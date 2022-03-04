@@ -136,7 +136,29 @@ func (s StudentsHandlers) Delete(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// Helper functions are below
+// Functions and methods i ran unit testing and table driven test on
+
+type Dimension struct {
+	area float64
+	wid  float64
+}
+
+type Services interface {
+	GetResources() []models.User
+	CreateResource(models.User) models.User
+}
+
+type Junior struct {
+	// Id     int64
+	// Name   string
+	// Gender string
+}
+
+type Senior struct {
+	// Id int64
+	// Name string
+	// Gender string
+}
 
 func ValidateData(u models.User) error {
 
@@ -179,4 +201,44 @@ func FruitsPrice(f [4]int) (result int) {
 
 	}
 	return result
+}
+
+func Perimeter(n, n1 float64) float64 {
+	return 2 * (n + n1)
+}
+
+func Area(d Dimension) float64 {
+	return 2 * (d.area + d.wid)
+}
+
+func (d Dimension) Circle() float64 {
+	return d.area * d.wid
+}
+
+func (j Junior) GetResources() (r []models.User) {
+	r = []models.User{{
+		Id:     1,
+		Name:   "Yinka",
+		Gender: "female",
+	}, {
+		Id:     2,
+		Name:   "Biola",
+		Gender: "male",
+	}, {
+		Id:     3,
+		Name:   "Kunle",
+		Gender: "male",
+	}}
+	return r
+
+}
+
+func (j Junior) CreateResource(r models.User) (result models.User) {
+	result = models.User{
+		Id:     r.Id,
+		Name:   r.Name,
+		Gender: r.Gender,
+	}
+	return result
+
 }
